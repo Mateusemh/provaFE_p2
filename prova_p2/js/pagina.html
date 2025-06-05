@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Projeto Mensagens Unificado</title>
+  <script src="js/jquery-3.6.4.min.js"></script>
+  <script src="js/api.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      color: #000;
+      padding: 20px;
+    }
+    .section {
+      margin-bottom: 40px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #00aaff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      margin-top: 10px;
+      border-spacing: 0;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ccc;
+    }
+    #mensagemErro {
+      color: red;
+    }
+    #mensagemEnviada {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Seção de Contato -->
+  <div class="section">
+    <h2>Enviar Mensagem</h2>
+    <form id="formContato">
+      <input type="text" id="nome" placeholder="Nome" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <textarea id="mensagem" placeholder="Mensagem" required></textarea>
+      <button type="submit">Enviar Mensagem</button>
+    </form>
+    <div id="mensagemEnviada"></div>
+  </div>
+
+  <!-- Seção de Login -->
+  <div class="section">
+    <h2>Login do Administrador</h2>
+    <form id="formLogin">
+      <input type="email" id="emailLogin" placeholder="E-mail" required />
+      <input type="password" id="senhaLogin" placeholder="Senha" required />
+      <button type="submit">Entrar</button>
+    </form>
+    <div id="mensagemErro"></div>
+  </div>
+
+  <!-- Seção de Mensagens -->
+  <div class="section" id="mensagensSection" style="display:none;">
+    <h2>Mensagens Recebidas</h2>
+    <table id="tabelaMensagens">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>Mensagem</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      // Enviar mensagem
+      $('#formContato').on('submit', function (e) {
+        e.preventDefault();
+        const mensagem = {
+          nome: $('#nome').val(),
+          email: $('#email').val(),
+          mensagem: $('#mensagem').val()
+        };
+        inserirMensagem(mensagem);
+        $('#mensagemEnviada').text("Mensagem enviada com sucesso!");
+        $(this)[0].reset();
+      });
+
+      // Login
+      $('#formLogin').on('submit', function (e) {
+        e.preventDefault();
+        const login = {
+          email: $('#emailLogin').val(),
+          senha: $('#senhaLogin').val()
+        };
+        if (validarUsuario(login)) {
+          $('#mensagemErro').text("");
+          $('#mensagensSection').show();
+          carregarMensagens();
+        } else {
+          $('#mensagemErro').text("E-mail e Senha inválidos");
+        }
+      });
+
+      // Carregar mensagens
+      function carregarMensagens() {
+        const mensagens = obterMensagens();
+        const corpo = $('#tabelaMensagens tbody');
+        corpo.empty();
+        mensagens.forEach(msg => {
+          const linha = `<tr>
+            <td>${msg.nome}</td>
+            <td>${msg.email}</td>
+            <td>${msg.mensagem}</td>
+          </tr>`;
+          corpo.append(linha);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
